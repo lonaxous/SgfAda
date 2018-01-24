@@ -1,5 +1,9 @@
+with Ada.Strings.Unbounded;
+use Ada.Strings.Unbounded;
+
 Generic 
 	Type obj is private;
+
 
 --Arbre portant un objet généric
 Package arbre is
@@ -13,7 +17,7 @@ Type T_Tsuiv is array(1..NMAX) of T_Darbre; --Contient des pointeurs vers les fi
 
 Type T_Noeud is record -- Définition du noeud d'un arbre(Fichier ou Repertoire)
 	T_Pere : T_Darbre; --Les Répertoires précédents
-	nom : String(1..NMAX); --Nom de l'élément
+	nom : unbounded_string; --Nom de l'élément
 	objet : obj; --Objet générique de l'arbre
 	taille : integer;  --La taille
 	nbFils: integer; --Le nombre de fils
@@ -44,7 +48,20 @@ Function CreerArbre return T_Darbre;
 --postcondition : Aucune
 --Exception : Aucune
 --###############################################################
-Procedure CreerNoeud(arbre : IN OUT T_Darbre; nom : String; objet : obj);
+Procedure CreerNoeud(arbre : IN OUT T_Darbre; nom : string; objet : obj);
+
+--###############################################################
+--Nom : CreerFils
+--Sémantique : Créer un fils à noeud 
+--Paramètre : arbre : Pointeur vers un arbre
+--			  nom : Nom du fils
+--			  objet : Objet du fils
+--retourne : Aucun 
+--précondition : Aucune
+--postcondition : Aucune
+--Exception : Aucune
+--###############################################################
+Procedure CreerFils(arbre : IN OUT T_Darbre; nom : string; objet : obj);
 
 --###############################################################
 --Nom : InitialiseFils
@@ -67,7 +84,7 @@ Procedure InitialiseFils(arbre : IN OUT T_Darbre);
 --postcondition : Aucune
 --Exception : Aucune
 --###############################################################
-Function RechercheIndiceFils(arbre : T_Darbre; nom : String)return integer;
+Function RechercheIndiceFils(arbre : T_Darbre; nom : string)return integer;
 
 --###############################################################
 --Nom : RechercheFils
@@ -79,7 +96,7 @@ Function RechercheIndiceFils(arbre : T_Darbre; nom : String)return integer;
 --postcondition : Aucune
 --Exception : Aucune
 --###############################################################
-Function RechercheFils(arbre : T_Darbre;nom : String)return T_Darbre;
+Function RechercheFils(arbre : T_Darbre;nom : string)return T_Darbre;
 
 --###############################################################
 --Nom : RecherchePere
@@ -106,7 +123,7 @@ Function RecherchePere(arbre : T_Darbre)return T_Darbre;
 --###############################################################
 Procedure AjoutFils(arbre : IN OUT T_Darbre; fils : T_Darbre)
 With
-	Post => RechercheFils(nom) /= null and arbre.all.nbFils'Result = arbre.all.nbFils'old + 1;
+	Post => RechercheFils(arbre,to_string(fils.all.nom)) /= null and arbre.all.nbFils = arbre.all.nbFils'old + 1;
 
 --###############################################################
 --Nom : SupprFils
@@ -118,9 +135,9 @@ With
 --postcondition : Le fils a été supprimé
 --Exception : Aucune
 --###############################################################
-Procedure SupprFils(arbre : IN OUT T_Darbre; nom : String)
+Procedure SupprFils(arbre : IN OUT T_Darbre; nom : string)
 With
-	Post => RechercheFils(nom) = null and arbre.all.nbFils'old = arbre.all.nbFils'Result + 1;
+	Post => RechercheFils(arbre,to_string(arbre.all.nom)) = null and arbre.all.nbFils'old = arbre.all.nbFils + 1;
 
 --###############################################################
 --Nom : SupprTousFils
@@ -145,7 +162,7 @@ With
 --postcondition : Le noeud correspond bien au nom entrée
 --Exception : TypeException
 --###############################################################
-Procedure ModifNom(arbre : IN OUT T_Darbre; nom : String)
+Procedure ModifNom(arbre : IN OUT T_Darbre; nom : string)
 With
 	Post => arbre.all.nom = nom;
 
@@ -179,17 +196,17 @@ With
 
 --###############################################################
 --Nom : ChangePere
---Sémantique : Change le pere d'un noeud
---Paramètre : arbre : Pointeur vers un noeud
+--Sémantique : Change le pere d'un fils
+--Paramètre : fils : Fils à déplacer
 --			  pere : Nouveau pere 
 --retourne : Auncun
 --précondition : Aucun
 --postcondition : Le nouveau père à bien été rentrée
 --Exception : Aucune
 --###############################################################
-Procedure ChangePere(arbre : IN OUT T_Darbre; pere : IN OUT T_Darbre)
+Procedure ChangePere(fils : IN OUT T_Darbre; pere : IN OUT T_Darbre)
 With
-	Post => arbre.all.T_Pere = pere;
+	Post => fils.all.T_Pere = pere;
 
 --###############################################################
 --Nom : AfficheArbre
@@ -217,10 +234,23 @@ Function GoRoot(arbre : T_Darbre)return T_Darbre;
 --Nom : AfficheTousFils
 --Sémantique : Affiche les fils et leur prédecesseur
 --Paramètre : arbre : Pointeur vers un noeud
+--			  ent : entier mémoire pour affichage
 --retourne : Aucun
 --précondition : Aucun
 --postcondition : Auncun
 --Exception : Aucune
 --###############################################################
-Procedure AfficheTousFils(arbre : T_Darbre);
+Procedure AfficheTousFils(arbre : T_Darbre; ent : integer);
+
+--###############################################################
+--Nom : AfficheFils
+--Sémantique : Affiche les fils d'un noeud
+--Paramètre : arbre : Pointeur vers un noeud
+--retourne : Aucun
+--précondition : Aucun
+--postcondition : Auncun
+--Exception : Aucune
+--###############################################################
+Procedure AfficheFils(arbre : T_Darbre);
+
 End arbre;

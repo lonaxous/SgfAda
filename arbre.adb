@@ -1,5 +1,7 @@
+with text_io;
+use text_io;
+
 Package Body arbre is
-	
 	--Fonctions
 	--R1 Créer un Arbre Vide
 	Function CreerArbre return T_Darbre is
@@ -9,12 +11,12 @@ Package Body arbre is
 
 
 	--R1 Créer un noeud
-	Procedure CreerNoeud(arbre : IN OUT T_Darbre; nom : String; objet : obj)is
+	Procedure CreerNoeud(arbre : IN OUT T_Darbre; nom : string; objet : obj)is
 		a : T_Darbre;
 	Begin
 		a := new T_Noeud;
 		a.all.T_Pere := null;
-		a.all.nom := nom;
+		a.all.nom := to_unbounded_string(nom);
 		a.all.taille := 0;
 		a.all.objet := objet;
 		a.all.nbFils := 0;
@@ -22,6 +24,15 @@ Package Body arbre is
 		arbre := a;
 	End CreerNoeud;
 
+	--R1 Créer un Fils
+	Procedure CreerFils(arbre : IN OUT T_Darbre; nom : string; objet : obj)is
+		fils : T_Darbre;
+	Begin
+		--R2 Créer un noeud
+		CreerNoeud(fils,nom,objet);
+		--R2 Ajouter un fils
+		AjoutFils(arbre,fils);
+	End CreerFils;
 
 	--R1 Mettre tous les fils à null
 	Procedure InitialiseFils(arbre : IN OUT T_Darbre)is
@@ -33,9 +44,9 @@ Package Body arbre is
 
 
 	--R1 Modification du nom
-	Procedure ModifNom(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure ModifNom(arbre : IN OUT T_Darbre; nom : string)is
 	Begin
-		arbre.all.nom := nom;
+		arbre.all.nom := to_unbounded_string(nom);
 	End ModifNom;
 
 
@@ -54,12 +65,12 @@ Package Body arbre is
 
 
 	--R1 Modifier le pères
-	Procedure ChangePere(arbre : IN OUT T_Darbre; pere : IN OUT T_Darbre)is
+	Procedure ChangePere(fils : IN OUT T_Darbre; pere : IN OUT T_Darbre)is
 	Begin
 		--R2 Supprimer le fils du pere
-		SupprFils(arbre.all.T_Pere,arbre.all.nom);
+		SupprFils(fils.all.T_Pere,to_string(arbre.all.nom));
 		--R2 Ajouter le fils au nouveau pere
-		AjoutFils(pere, arbre);
+		AjoutFils(pere, fils);
 	End ChangePere;
 
 
@@ -76,7 +87,7 @@ Package Body arbre is
 
 
 	--R1 Supprimer un fils
-	Procedure SupprFils(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure SupprFils(arbre : IN OUT T_Darbre; nom : string)is
 		i : integer; --indice du fils
 	Begin
 		--R2 Rechercher le fils
@@ -86,11 +97,11 @@ Package Body arbre is
 			arbre.all.T_Fils(i).all.T_Pere := null;
 
 			--R3 Supprimer le pointeur du pere vers le fils
-			if i /= nbFils then
-				arbre.all.T_Fils(i) := arbre.all.T_Fils(nbFils);
-				arbre.all.T_Fils(nbFils) := null;
+			if i /= arbre.all.nbFils then
+				arbre.all.T_Fils(i) := arbre.all.T_Fils(arbre.all.nbFils);
+				arbre.all.T_Fils(arbre.all.nbFils) := null;
 			else
-				arbre.all.T_Fils(nbFils) := null;
+				arbre.all.T_Fils(arbre.all.nbFils) := null;
 			End if;
 
 			arbre.all.nbFils := arbre.all.nbFils - 1; 
@@ -101,11 +112,11 @@ Package Body arbre is
 
 
 	--R1 Retourner le fils
-	Function RechercheFils(arbre : T_Darbre;nom : String)return T_Darbre is
+	Function RechercheFils(arbre : T_Darbre;nom : string)return T_Darbre is
 		i : integer; -- Indice du fils
 	Begin
 		--R2 Rechercher le fils
-		i := RechercheIndiceFils(arbre);
+		i := RechercheIndiceFils(arbre, nom);
 		if i /= 0 then
 			return arbre.all.T_Fils(i);
 		else
@@ -115,16 +126,16 @@ Package Body arbre is
 
 
 	--R1 Rechercher l'indice d'un fils
-	function RechercheIndiceFils(arbre : T_Darbre; nom : String)return integer is
+	function RechercheIndiceFils(arbre : T_Darbre; nom : string)return integer is
 		i : integer; --Indice pour la boucle
 		estTrouve : boolean; --Booléen pour stopper la boucle
 	Begin
 		estTrouve := false;
 		i := 0;
 		--R2 Vérifier les fils jusqu'à trouver le bon
-		While not estTrouve and i < nbFils Loop
+		While not(estTrouve) and i <= arbre.all.nbFils Loop
 			i := i + 1;
-			estTrouve := arbre.all.T_Fils(i).all.nom = nom;
+			estTrouve := arbre.all.T_Fils(i).all.nom = to_unbounded_string(nom);
 		End Loop;
 
 		--R2 Retourner l'indice trouvé ou 0
@@ -133,6 +144,12 @@ Package Body arbre is
 		else
 			return 0;
 		End if;
+		exception
+			when Constraint_Error => Put(nom);
+									 Put(" n'existe pas dans ");
+									 Put(to_string(arbre.all.nom));
+									 New_Line;
+									 return 0;
 	End RechercheIndiceFils;
 
 
@@ -156,11 +173,12 @@ Package Body arbre is
 	Begin
 		--R2 Aller à la racine
 		root := GoRoot(arbre);
-
+		AfficheTousFils(root,1);
+		New_Line;
 	End AfficheArbre;
 
 	--R1 Retourner la racine de l'arbre
-	Function GoRoot(arbre :T_Darbre)is
+	Function GoRoot(arbre :T_Darbre)return T_Darbre is
 	Begin
 		if arbre.all.T_Pere /= null then
 			return GoRoot(arbre.all.T_Pere);
@@ -170,8 +188,25 @@ Package Body arbre is
 	End GoRoot;
 
 	--R1 Afficher la totalité des fils
-	Procedure AfficheTousFils(arbre : T_Darbre)is
+	Procedure AfficheTousFils(arbre : T_Darbre; ent : integer)is
 	Begin
-		
+		Put(To_string(arbre.all.nom));
+		--R2 Afficher les fils courant
+		For i in 1..arbre.all.nbFils Loop
+			New_Line;
+			--Espace pour afficher proprement
+			For j in 1..ent Loop
+				Put("  ");
+			End Loop;
+			AfficheTousFils(arbre.all.T_Fils(i),ent+1);
+		End Loop;
 	End AfficheTousFils;
+
+	--R1 Afficher les fils d'un noeud
+	Procedure AfficheFils(arbre :T_Darbre)is
+	Begin
+		For i in 1..arbre.all.nbFils Loop
+			Put_line(to_string(arbre.all.T_Fils(i).all.name));
+		End Loop;
+	End AfficheFils;
 End arbre;

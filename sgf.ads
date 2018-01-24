@@ -1,3 +1,6 @@
+with Ada.Strings.Unbounded;
+use Ada.Strings.Unbounded;
+
 with arbre;
 Package sgf is
 	package arbre_sgf is new arbre(boolean);
@@ -105,7 +108,7 @@ Procedure RmR(arbre : IN OUT T_Darbre; nom : String);
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier existe et est dans le bon repertoire
---Exception : Aucune
+--Exceptions : Fils_absent, Erreur_Chemin, Pas_Repertoire
 --###############################################################
 Procedure Mv(arbre : IN OUT T_Darbre; nom : String; chemin : String);
 
@@ -117,7 +120,7 @@ Procedure Mv(arbre : IN OUT T_Darbre; nom : String; chemin : String);
 --retourne : Aucun
 --précondition : Le repertoire lié au chemin existe
 --postcondition : aucun
---Exception : aucun
+--Exception : Erreur_Chemin, Pas_Repertoire
 --###############################################################
 Procedure Cd(arbre : IN OUT T_Darbre; chemin : String);
 
@@ -130,7 +133,7 @@ Procedure Cd(arbre : IN OUT T_Darbre; chemin : String);
 --retourne : Aucun
 --précondition : Le repertoire existe
 --postcondition : Le repertoire n'existe plus
---Exception : Aucune
+--Exception : Fils_Absent, Pas_Repertoire, Erreur_Chemin
 --###############################################################
 Procedure CpR(arbre : IN OUT T_Darbre; nom : String; chemin : String);
 
@@ -157,5 +160,18 @@ Procedure Tar(arbre : IN OUT T_Darbre; chemin : String);
 --Exception : Aucune
 --###############################################################
 Procedure Nano(arbre : IN OUT T_Darbre; nom : String);
+
+--###############################################################
+--Nom : DetermineChemin
+--Sémantique : Retourne à partir d'un chemin un arbre
+--Paramètre : arbre : Repertoire courant
+--			  chemin : Le chemin en chaine de caractère
+--			  lchemin : Longueur de la chaine de caractère du chemin
+--retourne : Pointeur vers le repertoire du chemin
+--précondition : aucune
+--postcondition : aucune
+--Exceptions : Erreur_Root, Fils_Absent, Pere_Absent
+--###############################################################
+Function DetermineChemin(arbre : T_Darbre; chemin : String; lchemin : integer)return T_Darbre;
 
 End sgf;
