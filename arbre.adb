@@ -68,7 +68,7 @@ Package Body arbre is
 	Procedure ChangePere(fils : IN OUT T_Darbre; pere : IN OUT T_Darbre)is
 	Begin
 		--R2 Supprimer le fils du pere
-		SupprFils(fils.all.T_Pere,to_string(arbre.all.nom));
+		SupprFils(fils.all.T_Pere,to_string(fils.all.nom));
 		--R2 Ajouter le fils au nouveau pere
 		AjoutFils(pere, fils);
 	End ChangePere;
@@ -206,7 +206,7 @@ Package Body arbre is
 	Procedure AfficheFils(arbre :T_Darbre)is
 	Begin
 		For i in 1..arbre.all.nbFils Loop
-			Put_line(to_string(arbre.all.T_Fils(i).all.name));
+			Put_line(to_string(arbre.all.T_Fils(i).all.nom));
 		End Loop;
 	End AfficheFils;
 End arbre;

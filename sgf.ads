@@ -1,6 +1,9 @@
 with Ada.Strings.Unbounded;
 use Ada.Strings.Unbounded;
 
+with text_io;
+use text_io;
+
 with arbre;
 Package sgf is
 	package arbre_sgf is new arbre(boolean);
