@@ -1,36 +1,30 @@
 Package body sgf is 
 	Pas_Repertoire,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin : Exception;
 	--R1 Creer le SGF
-	Function Format return T_Darbre is
-		a : T_Darbre;
+	arbre : T_Darbre;
+
+	Procedure Format is
 	Begin
-		a := CreerArbre;
+		arbre := CreerArbre;
 		--R2 Créer l'aborescence
-		CreerNoeud(a,"/",true);
-		CreerFils(a,"temp",true);
-		CreerFils(a,"etc",true);
-		CreerFils(a,"opt",true);
-		CreerFils(a,"bin",true);
-		return a;
+		CreerNoeud(arbre,"/",true);
+		CreerFils(arbre,"temp",true);
+		CreerFils(arbre,"etc",true);
+		CreerFils(arbre,"opt",true);
+		CreerFils(arbre,"bin",true);
 	End Format;
 
 	--R1 Afficher le chemin courant
-	Procedure Pwd(arbre : IN T_Darbre)is
+	Procedure Pwd is
+		a : T_Darbre;
 	Begin
-		--R1 Parcourir les pères
-		If arbre.all.T_Pere /= null then
-			--R2 Afficher le père
-			Pwd(arbre.all.T_Pere);
-			--R2 Afficher le chemin
-			Put("/");
-			Put(to_string(arbre.all.nom));
-		Else
-			Put(to_string(arbre.all.nom));
-		End if;
+		a := arbre;
+		Pwd(a);
+		New_Line;
 	End Pwd;
 
 	--R1 Afficher les dossier et fichier du repertoire courant
-	Procedure Ls(arbre : IN T_Darbre)is
+	Procedure Ls is
 	Begin
 		--R2 Parcourir les fils
 		For i in 1..arbre.all.nbFils Loop
@@ -41,25 +35,25 @@ Package body sgf is
 	End Ls;
 
 	--R1 Affiche le contenu du repertoire courant et de ses sous repertoire
-	Procedure LsR(arbre : IN T_Darbre)is
+	Procedure LsR is
 	Begin
 		AfficheFils(arbre);
 	End LsR;
 
 	--R1 Creer un fichier
-	Procedure Touch(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure Touch(nom : String)is
 	Begin
 		CreerFils(arbre, nom, false);
 	End Touch;
 
 	--R1 Creer un repertoire
-	Procedure Mkdir(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure Mkdir(nom : String)is
 	Begin
 		CreerFils(arbre, nom, true);
 	End Mkdir;
 
 	--R1 Suppression d'un fichier
-	Procedure Rm(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure Rm(nom : String)is
 		i: integer;
 	Begin
 		--R2 Regarder si c'est un fichier
@@ -73,7 +67,7 @@ Package body sgf is
 	End Rm;
 
 	--R1 Supprimer un répertoire
-	Procedure RmR(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure RmR(nom : String)is
 		i : integer; --Indice du fils
 	Begin
 		--R2 Regarder si c'est un repertoire
@@ -87,30 +81,30 @@ Package body sgf is
 	End RmR;
 
 	--R1 Donner l'arbre à partir d'un chemin
-	Function DetermineChemin(arbre : T_Darbre; chemin : String; lchemin : integer)return T_Darbre is
-		final : T_Darbre;
-		EnTraitement : unbounded_string;
+	Function DetermineChemin(chemin : String; lchemin : integer)return T_Darbre is
+		save : T_Darbre; --Sauvegarde de l'arbre en cas d'erreur
+		final : T_Darbre; --Pointeur vers l'arbre au bout du chemin
+		EnTraitement : unbounded_string; --Chaine de caractère pour le traitement du chemin
 		nbEnTraitement : integer;
-		i : integer;
+		i : integer; --Indice
 		ChaineChemin : String(1..lchemin); --String pour fixer la taille du stirng chemin
 	Begin
+		save := arbre;
 		ChaineChemin:=chemin;
 		--R2 Regarder chaque caractère
 		nbEnTraitement := 0;
 		i:=1;
 		If ChaineChemin(i) = '/' then
-				final := GoRoot(arbre);
-				i := i+1;
-			Else
-				final := arbre;
-			End if;
+			final := GoRoot(arbre);
+			i := i+1;
+		Else
+			final := arbre;
+		End if;
 		While i<=lchemin Loop
-
 			-- R3 Traiter les suites de caractère
+			--On s'arrete au / pour descendre dans l'arborescense
 			If ChaineChemin(i) = '/' then
-				nbEnTraitement := 0;
-				EnTraitement := Null_Unbounded_String;
-				--R4 Determiner le pointeur qui y est attaché
+				--R4 Déterminer le fils
 				If to_String(EnTraitement) = ".." then
 					final := RecherchePere(final);
 					If final = null then
@@ -134,9 +128,19 @@ Package body sgf is
 						End If;
 					End If;
 				End If;
+				nbEnTraitement := 0;
+				EnTraitement := Null_Unbounded_String;
 			Else 
 				nbEnTraitement := nbEnTraitement + 1;
-				Replace_Element(EnTraitement,nbEnTraitement,ChaineChemin(i));
+				EnTraitement := EnTraitement & ChaineChemin(i);
+				If i=lchemin then
+					final := RechercheFils(final,to_string(EnTraitement));
+					If final = null then
+						raise Fils_Absent;
+					Else
+						null;
+					End If;
+				End If;
 			End If;
 			i := i+1;
 		End Loop;
@@ -151,14 +155,14 @@ Package body sgf is
 	End DetermineChemin;
 
 	--R1 Deplacer un fichier ou renommer
-	Procedure Mv(arbre : IN OUT T_Darbre; nom : String; chemin : String)is
+	Procedure Mv(nom : String; chemin : String)is
 		ADeplacer : T_Darbre; --Arbre contenant le fils à déplacer
 		DuChemin  : T_Darbre; --Arbre contenant le futur pere
 	Begin
 		--R2 Recuperer le fils
 		ADeplacer := RechercheFils(arbre,nom);
 		--R2 Recuperer le futur pere
-		DuChemin := DetermineChemin(arbre,chemin,length(to_unbounded_string(chemin)));
+		DuChemin := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		if ADeplacer = null then
 			raise Fils_Absent;
 		Else
@@ -177,15 +181,18 @@ Package body sgf is
 		Exception
 			when Fils_Absent => null;
 			When Erreur_Chemin => null;
-			When Pas_Repertoire => Put_Line("Le chemin ne désigne pas un repertoire");
+			When Pas_Repertoire => Put("Erreur, ");
+								   Put(chemin);
+								   Put(" désigne un fichier");
+								   New_Line;
 	End Mv;
 
 	--R1 Changer de repertoire
-	Procedure Cd(arbre : IN OUT T_Darbre; chemin : String)is
+	Procedure Cd(chemin : String)is
 		a : T_Darbre; 
 	Begin
 		--R2 Obtenir le repertoire indiqué par le chemin
-		a := DetermineChemin(arbre,chemin,length(to_unbounded_string(chemin)));
+		a := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		If a = null then
 			raise Erreur_Chemin;
 		Else
@@ -198,11 +205,14 @@ Package body sgf is
 		End If;
 		Exception
 			when Erreur_Chemin => null;
-			when Pas_Repertoire => Put_Line("Le chemin ne désigne pas un repertoire");
+			When Pas_Repertoire => Put("Erreur, ");
+								   Put(chemin);
+								   Put(" désigne un fichier");
+								   New_Line;
 	End Cd;
 
 	--R2 Copier un fils dans un autre repertoire
-	Procedure CpR(arbre : IN OUT T_Darbre; nom : String; chemin : String)is
+	Procedure CpR(nom : String; chemin : String)is
 		ACopier : T_Darbre; --Arbre contenant l'arbre à copier
 		DuChemin : T_Darbre; --Arbre contenant l'arbre du chemin
 
@@ -210,7 +220,7 @@ Package body sgf is
 		--R3 Récupérer le fils
 		ACopier := RechercheFils(arbre,nom);
 		--R3 Récupérer le repertoire au bout du chemin
-		DuChemin := DetermineChemin(arbre,nom,length(to_unbounded_string(chemin)));
+		DuChemin := DetermineChemin(nom,length(to_unbounded_string(chemin)));
 		if ACopier = null then
 			raise Fils_Absent;
 		Else
@@ -229,18 +239,36 @@ Package body sgf is
 		Exception
 			when Fils_Absent => null;
 			when Erreur_Chemin => null;
-			when Pas_Repertoire => Put_Line("Le chemin ne désigne pas un repertoire");
+			When Pas_Repertoire => Put("Erreur, ");
+								   Put(chemin);
+								   Put(" désigne un fichier");
+								   New_Line;
 	End CpR;
 
 	--Compresser un repertoire
-	Procedure Tar(arbre : IN OUT T_Darbre; chemin : String)is
+	Procedure Tar(chemin : String)is
 	Begin
 		arbre := arbre;
 	End Tar;
 
 	--Modifirt un objet
-	Procedure Nano(arbre : IN OUT T_Darbre; nom : String)is
+	Procedure Nano(nom : String)is
 	Begin
 		arbre := arbre;
 	End Nano;
+
+	--Afficher les père pour le chemin
+	Procedure Pwd(a : T_Darbre)is
+	Begin
+		--R1 Parcourir les pères
+		If a.all.T_Pere /= null then
+			--R2 Afficher le père
+			Pwd(a.all.T_Pere);
+			--R2 Afficher le chemin
+			Put("/");
+			Put(to_string(a.all.nom));
+		Else
+			null;
+		End if;
+	End Pwd;
 End sgf;
