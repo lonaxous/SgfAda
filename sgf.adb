@@ -161,6 +161,8 @@ Package body sgf is
 		End Loop;
 		return final;
 		Exception
+			When CONSTRAINT_ERROR => Put_Line("Erreur, Avec le déplacement");
+									 return null;
 			When Erreur_Root => Put_Line("Erreur, vous ne pouvez pas avoir de // dans un chemin");
 							    return null;
 			When Fils_Absent => Put_Line("Erreur, Un Fichier ou Repertoire du chemin n'existe pas");
@@ -202,7 +204,7 @@ Package body sgf is
 								   Put(chemin);
 								   Put(" désigne un fichier");
 								   New_Line;
-			When Pas_Fichier => Put_Line("Erreur, vous essayer de déplacer un fichier avec Mv");
+			When Pas_Fichier => Put_Line("Erreur, vous essayer de déplacer un repertoire avec Mv");
 	End Mv;
 
 	--R1 Changer de repertoire
@@ -233,12 +235,15 @@ Package body sgf is
 	Procedure CpR(nom : String; chemin : String)is
 		ACopier : T_Darbre; --Arbre contenant l'arbre à copier
 		DuChemin : T_Darbre; --Arbre contenant l'arbre du chemin
+		Save : T_Darbre;
 
 	Begin
+		Save := arbre;
 		--R3 Récupérer le fils
 		ACopier := RechercheFils(arbre,nom);
 		--R3 Récupérer le repertoire au bout du chemin
 		DuChemin := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
+		--Si le fils n'existe pas
 		if ACopier = null then
 			raise Fils_Absent;
 		Else
@@ -247,7 +252,8 @@ Package body sgf is
 			Else
 				If DuChemin.all.objet then
 				--R4 Copier dans le repertoire trouvé
-					AjoutFils(DuChemin,ACopier);
+					CopierCpr(chemin,ACopier);
+					arbre := save;
 				Else
 					raise Pas_Repertoire;
 				End If;
@@ -261,6 +267,31 @@ Package body sgf is
 								   Put(" désigne un fichier");
 								   New_Line;
 	End CpR;
+
+
+	--R1 Copier le contenue d'un arbre dans un arbre
+	Procedure CopierCpr(chemin : String; copie : T_Darbre)is
+	Begin
+		--R2 Copier les objets
+		--Si c'est un repertoire
+		If copie.all.objet then
+			cd(chemin);
+			Mkdir(to_string(copie.all.nom));
+			--R3 COpier les fils de celui-ci
+			for i in 1..copie.all.nbFils Loop
+				CopierCpr(to_string(copie.all.nom),copie.all.T_Fils(i));
+			End Loop;
+			cd("../");
+		--Si c'est un fichier
+		Else
+			cd(chemin);
+			Touch(to_string(copie.all.nom));
+			cd("../");
+		End if;
+
+
+
+	End CopierCpr;
 
 	--Compresser un repertoire
 	Procedure Tar(chemin : String)is

@@ -137,6 +137,18 @@ Procedure Cd(chemin : String);
 Procedure CpR(nom : String; chemin : String);
 
 --###############################################################
+--Nom : CopieCpr
+--Sémantique : Méthode Récursive pour utiliser le cpr, elle va reproduire à l'identique un arbre donnée
+--Paramètre : chemin : chemin vers un repertoire
+--			  arbe : arbre à  reproduire
+--retourne : Aucun
+--précondition : Le repertoire existe
+--postcondition : Le repertoire n'existe plus
+--Exception : Fils_Absent, Pas_Repertoire, Erreur_Chemin
+--##############################################################
+Procedure CopierCpR(chemin : String; copie : T_Darbre);
+
+--###############################################################
 --Nom : Tar
 --Sémantique : Compression d'un repertoire
 --Paramètre : chemin : chemin où ira la compression
