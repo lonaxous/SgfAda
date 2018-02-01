@@ -1,11 +1,15 @@
 Package Body miniconsole is
 
+
 Procedure Main is
 
 	commande : String(1..1000); --String pour stocker la commande
 	estFini : boolean; --Booléen de fin de boucle
 	lcommande : integer; --Longueur de la commande
 Begin
+	--Suppression de Warnings inutiles.
+	pragma Warnings (Off, "index for ""commande"" may assume lower bound of 1");
+	pragma Warnings (Off, "suggested replacement: ""commande'First""");
 	Put_Line("Bienvenue dans le sgf, utilisez '?' ou 'help' pour obtenir la liste des commandes.");
 	estFini := false;
 	Format;
@@ -90,7 +94,7 @@ Begin
 	Elsif T_Arguments(1) = "cp-r" and cpt=3 then
 		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3))); 
 	Else
-		Put_Line("Commande inexistante !");
+		Put_Line("Commande erronée !");
 	End If;
 End InterpreteurCommande;
 End miniconsole;
