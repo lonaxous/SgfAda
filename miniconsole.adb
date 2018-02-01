@@ -42,7 +42,8 @@ Begin
 		--R4 Analyser chaque caractère
 		--Erreur si trop d'argument
 		If cpt>3 then
-			Put_Line("Il y a trop d'argument");
+			--On arrete la boucle
+			exit;
 		Else
 			--On vérifie le tiret
 			If Ainterpreter(i)='-' and cpt = 1 then
@@ -67,25 +68,26 @@ Begin
 	End Loop;
 
 	--R2 Executer la commande
-	If T_Arguments(1) = "ls" then
+	--cpt représente le nombre d'argument
+	If T_Arguments(1) = "ls" and cpt = 1 then
 		Ls;
-	Elsif T_Arguments(1) = "pwd" then
+	Elsif T_Arguments(1) = "pwd" and cpt = 1 then
 		Pwd;
-	Elsif T_Arguments(1) = "ls-r" then
+	Elsif T_Arguments(1) = "ls-r" and cpt = 1 then
 		LsR;
-	Elsif T_Arguments(1) = "touch" then
+	Elsif T_Arguments(1) = "touch" and cpt = 2  then
 		Touch(to_string(T_Arguments(2)));
-	Elsif T_Arguments(1) = "mkdir" then
+	Elsif T_Arguments(1) = "mkdir" and cpt = 2 then
 		Mkdir(to_string(T_Arguments(2)));
-	Elsif T_Arguments(1) = "rm" then
+	Elsif T_Arguments(1) = "rm" and cpt = 2 then
 		Rm(to_string(T_Arguments(2)));
-	Elsif T_Arguments(1) = "rm-r" then
+	Elsif T_Arguments(1) = "rm-r" and cpt = 2 then
 		RmR(to_string(T_Arguments(2)));
-	Elsif T_Arguments(1) = "mv" then
+	Elsif T_Arguments(1) = "mv" and cpt = 3 then
 		Mv(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
-	Elsif T_Arguments(1) = "cd" then
+	Elsif T_Arguments(1) = "cd" and cpt = 2 then
 		Cd(to_string(T_Arguments(2)));
-	Elsif T_Arguments(1) = "cp-r" then
+	Elsif T_Arguments(1) = "cp-r" and cpt=3 then
 		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3))); 
 	Else
 		Put_Line("Commande inexistante !");
