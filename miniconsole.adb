@@ -12,7 +12,7 @@ Begin
 	While not estFini Loop
 		Put(">>");
 		get_line(commande,lcommande);
-		If commande = "quit" then
+		If commande(1..4) = "quit" then
 			estFini := true;
 		Else
 			InterpreteurCommande(commande,lcommande);
