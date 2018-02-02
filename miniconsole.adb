@@ -92,7 +92,9 @@ Begin
 	Elsif T_Arguments(1) = "cd" and cpt = 2 then
 		Cd(to_string(T_Arguments(2)));
 	Elsif T_Arguments(1) = "cp-r" and cpt=3 then
-		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3))); 
+		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
+	Elsif T_Arguments(1) ="capacity" and cpt=1 then
+		getCapacite;
 	Else
 		Put_Line("Commande erronée !");
 	End If;

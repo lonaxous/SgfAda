@@ -163,12 +163,13 @@ Procedure Tar(chemin : String);
 --Nom : Nano
 --Sémantique : Modifie (la taille) d'un fichier
 --Paramètre : nom : nom du fichier à modifier
+--			  tai : Nouvelle taille du fichier
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier a changé de taille
 --Exception : Aucune
 --###############################################################
-Procedure Nano(nom : String);
+Procedure Nano(nom : String;tai : integer);
 
 --###############################################################
 --Nom : DetermineChemin
@@ -182,6 +183,16 @@ Procedure Nano(nom : String);
 --###############################################################
 Function DetermineChemin(chemin : String; lchemin : integer)return T_Darbre;
 
+--###############################################################
+--Nom : getCapacite
+--Sémantique : Affiche la capacite restante du système
+--Paramètre : Aucun
+--retourne : Aucune
+--précondition : aucune
+--postcondition : aucune
+--Exceptions : Aucune
+--###############################################################
+Procedure getCapacite;
 Procedure Pwd(a : T_Darbre);
 
 End sgf;

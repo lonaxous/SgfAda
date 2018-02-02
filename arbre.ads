@@ -9,11 +9,13 @@ Generic
 Package arbre is
 --Variables
 NMAX : constant integer := 20;
-TAILLEMAX: constant integer := 10;
+TAILLEMAX: constant integer := 100;
 
 Type T_Noeud;
 Type T_Darbre is access T_Noeud; 
 Type T_Tsuiv is array(1..NMAX) of T_Darbre; --Contient des pointeurs vers les fils de l'arbre
+
+Capacite_Max_Atteinte : exception;
 
 Type T_Noeud is record -- Définition du noeud d'un arbre(Fichier ou Repertoire)
 	T_Pere : T_Darbre; --Les Répertoires précédents
@@ -253,4 +255,38 @@ Procedure AfficheTousFils(arbre : T_Darbre; ent : integer);
 --###############################################################
 Procedure AfficheFils(arbre : T_Darbre);
 
+--###############################################################
+--Nom : AugmenterTaille
+--Sémantique : Augmente la taille des noeuds pères lors d'un rajout de fils 
+--Paramètre : arbre : Pointeur vers le noeud contenant le nouveau fils
+--			  tai : Taille à ajouter
+--retourne : Aucun
+--précondition : Aucun
+--postcondition : Auncun
+--Exception : Capacite_Max_Atteinte
+--###############################################################
+Procedure AugmenterTaille(arbre : T_Darbre;tai : integer);
+
+--###############################################################
+--Nom : DiminuerTaille
+--Sémantique : diminue la taille des noeuds pères lors d'un rajout de fils 
+--Paramètre : arbre : Pointeur vers le noeud contenant le nouveau fils
+--			  tai : Taille à enlever
+--retourne : Aucun
+--précondition : Aucun
+--postcondition : Auncun
+--Exception : Aucune
+--###############################################################
+Procedure DiminuerTaille(arbre : T_Darbre;tai : integer);
+
+--###############################################################
+--Nom : GetTailleRoot
+--Sémantique : retourne la taille du root
+--Paramètre : arbre : Pointeur vers le noeud actuel
+--retourne : La taille du root
+--précondition : Aucun
+--postcondition : Auncun
+--Exception : Aucune
+--###############################################################
+Function GetTailleRoot(arbre : T_Darbre) return integer;
 End arbre;

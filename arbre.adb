@@ -1,3 +1,6 @@
+with ada.integer_text_io;
+use ada.integer_text_io;
+
 with text_io;
 use text_io;
 
@@ -32,6 +35,9 @@ Package Body arbre is
 		CreerNoeud(fils,nom,objet);
 		--R2 Ajouter un fils
 		AjoutFils(arbre,fils);
+		exception
+			when Capacite_Max_Atteinte => Put_line("La Capacité maximale a été atteinte");
+										  SupprFils(arbre, to_string(fils.all.nom));
 	End CreerFils;
 
 	--R1 Mettre tous les fils à null
@@ -54,6 +60,7 @@ Package Body arbre is
 	Procedure ModifTaille(arbre : IN OUT T_Darbre; taille : integer)is
 	Begin
 		arbre.all.taille := taille;
+		AugmenterTaille(arbre.all.T_Pere,taille);
 	End ModifTaille;
 
 
@@ -92,6 +99,9 @@ Package Body arbre is
 	Begin
 		--R2 Rechercher le fils
 		i := RechercheIndiceFils(arbre,nom);
+		Put(arbre.all.T_Fils(i).all.taille);
+		New_Line;
+		AugmenterTaille(arbre,-arbre.all.T_Fils(i).all.taille);
 		if  i /= 0 then
 			--R3 Supprimer le pointeur du fils vers le pere
 			arbre.all.T_Fils(i).all.T_Pere := null;
@@ -163,6 +173,7 @@ Package Body arbre is
 	Procedure SupprTousFils(arbre : IN OUT T_Darbre)is
 	Begin
 		arbre.all.nbFils := 0;
+		DiminuerTaille(arbre,arbre.all.taille);
 		InitialiseFils(arbre);
 	End SupprTousFils;
 
@@ -209,4 +220,40 @@ Package Body arbre is
 			Put_line(to_string(arbre.all.T_Fils(i).all.nom));
 		End Loop;
 	End AfficheFils;
+
+	--R1 Augmenter la taille des repertoires peres
+	Procedure AugmenterTaille(arbre : T_Darbre; tai : integer)is
+	Begin
+		--R2 Augmenter la taille du pere
+		arbre.all.taille := arbre.all.taille + tai;
+		Put(to_string(arbre.all.nom));
+		Put(" : ");
+		Put(arbre.all.taille);
+		New_Line;
+		If arbre.all.T_Pere /= null then
+			--R3 Recurcivité augmenter la taille du pere du pere
+			AugmenterTaille(arbre.all.T_Pere,tai);
+		Else
+			null;
+		End if;
+	End AugmenterTaille;
+
+	Procedure DiminuerTaille(arbre : T_Darbre; tai : integer)is
+	Begin
+		--R2 Augmenter la taille du pere
+		arbre.all.taille := arbre.all.taille - tai;
+		If arbre.all.T_Pere /= null then
+			--R3 Recurcivité augmenter la taille du pere du pere
+			DiminuerTaille(arbre.all.T_Pere,tai);
+		Else
+			null;
+		End if;
+	End DiminuerTaille;
+
+	--R2 retourne la taille du root
+	Function GetTailleRoot(arbre : T_Darbre) return integer is
+	Begin
+		return GoRoot(arbre).all.taille;
+	End GetTailleRoot;
+
 End arbre;

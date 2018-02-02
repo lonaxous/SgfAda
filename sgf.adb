@@ -1,5 +1,5 @@
 Package body sgf is 
-	Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin : Exception;
+	Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin,Capacite_Max_Atteinte : Exception;
 	--R1 Creer le SGF
 	arbre : T_Darbre;
 
@@ -48,8 +48,22 @@ Package body sgf is
 
 	--R1 Creer un fichier
 	Procedure Touch(nom : String)is
+		fils : T_Darbre;
 	Begin
-		CreerFils(arbre, nom, false);
+		--R2 Vérifier si la taille max n'est pas atteinte suite 
+		If GetTailleRoot(arbre) + 10 < TAILLEMAX then
+			CreerFils(arbre, nom, false);
+			fils := RechercheFils(arbre,nom);
+			If fils /= null then
+				ModifTaille(fils,10);
+			Else
+				null;
+			End if;
+		Else
+			raise Capacite_Max_Atteinte;
+		End if;
+		Exception
+			When Capacite_Max_Atteinte =>Put_Line("Attention capacité maximal atteinte, annulation de la commande précédente !");
 	End Touch;
 
 	--R1 Creer un repertoire
@@ -272,23 +286,31 @@ Package body sgf is
 	--R1 Copier le contenue d'un arbre dans un arbre
 	Procedure CopierCpr(chemin : String; copie : T_Darbre)is
 	Begin
-		--R2 Copier les objets
-		--Si c'est un repertoire
-		If copie.all.objet then
-			cd(chemin);
-			Mkdir(to_string(copie.all.nom));
-			--R3 COpier les fils de celui-ci
-			for i in 1..copie.all.nbFils Loop
-				CopierCpr(to_string(copie.all.nom),copie.all.T_Fils(i));
-			End Loop;
-			cd("../");
-		--Si c'est un fichier
+		--R2 Vérifier qu'après la copie la taille maximale ne sera pas atteinte
+		If GetTailleRoot(arbre) + copie.all.taille < TAILLEMAX then
+			--R2 Copier les objets
+			--Si c'est un repertoire
+			If copie.all.objet then
+				cd(chemin);
+				Mkdir(to_string(copie.all.nom));
+				--R3 COpier les fils de celui-ci
+				for i in 1..copie.all.nbFils Loop
+					CopierCpr(to_string(copie.all.nom),copie.all.T_Fils(i));
+				End Loop;
+				--Remonter dans l'arborescence
+				cd("../");
+			--Si c'est un fichier
+			Else
+				cd(chemin);
+				Touch(to_string(copie.all.nom));
+				--Remonter dans l'arborescence
+				cd("../");
+			End if;
 		Else
-			cd(chemin);
-			Touch(to_string(copie.all.nom));
-			cd("../");
+			raise Capacite_Max_Atteinte;
 		End if;
-
+		Exception
+			When Capacite_Max_Atteinte => Put_Line("Attention capacité maximal atteinte, annulation de la commande précédente !");
 
 
 	End CopierCpr;
@@ -300,9 +322,16 @@ Package body sgf is
 	End Tar;
 
 	--Modifirt un objet
-	Procedure Nano(nom : String)is
+	Procedure Nano(nom : String; tai : integer)is
+		fils : T_Darbre;
 	Begin
-		arbre := arbre;
+		fils := RechercheFils(arbre,nom);
+		If fils /= null then
+			fils.all.taille := tai;
+			AugmenterTaille(fils,tai-fils.all.taille);
+		Else	
+			null;
+		End if;
 	End Nano;
 
 	--Afficher les père pour le chemin
@@ -319,4 +348,16 @@ Package body sgf is
 			null;
 		End if;
 	End Pwd;
+
+	--R1 Afficher la capacité restante 
+	Procedure getCapacite is
+		save : T_Darbre;
+	Begin
+		save := arbre;
+		cd("/");
+		Put("Capacité restante : ");
+		Put(TAILLEMAX-arbre.all.taille);
+		New_Line;
+		arbre := save;
+	End getCapacite;
 End sgf;
