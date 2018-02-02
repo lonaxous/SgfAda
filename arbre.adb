@@ -29,15 +29,18 @@ Package Body arbre is
 
 	--R1 Créer un Fils
 	Procedure CreerFils(arbre : IN OUT T_Darbre; nom : string; objet : obj)is
-		fils : T_Darbre;
+		fils : T_Darbre; --Le fils qui va être ajouté
 	Begin
-		--R2 Créer un noeud
-		CreerNoeud(fils,nom,objet);
-		--R2 Ajouter un fils
-		AjoutFils(arbre,fils);
-		exception
-			when Capacite_Max_Atteinte => Put_line("La Capacité maximale a été atteinte");
-										  SupprFils(arbre, to_string(fils.all.nom));
+		--R2 Vérifier que le nom du futur fils n'est pas le nom d'un des fils existants
+		if not FilsExiste(arbre,nom) then
+			--R3 Créer un noeud
+			CreerNoeud(fils,nom,objet);
+			--R3 Ajouter un fils
+			AjoutFils(arbre,fils);
+		Else
+			--Si le nom est déjà présent
+			CreerFils(arbre, nom & "'", objet);
+		End If;
 	End CreerFils;
 
 	--R1 Mettre tous les fils à null
@@ -99,8 +102,6 @@ Package Body arbre is
 	Begin
 		--R2 Rechercher le fils
 		i := RechercheIndiceFils(arbre,nom);
-		Put(arbre.all.T_Fils(i).all.taille);
-		New_Line;
 		AugmenterTaille(arbre,-arbre.all.T_Fils(i).all.taille);
 		if  i /= 0 then
 			--R3 Supprimer le pointeur du fils vers le pere
@@ -226,10 +227,6 @@ Package Body arbre is
 	Begin
 		--R2 Augmenter la taille du pere
 		arbre.all.taille := arbre.all.taille + tai;
-		Put(to_string(arbre.all.nom));
-		Put(" : ");
-		Put(arbre.all.taille);
-		New_Line;
 		If arbre.all.T_Pere /= null then
 			--R3 Recurcivité augmenter la taille du pere du pere
 			AugmenterTaille(arbre.all.T_Pere,tai);
@@ -250,10 +247,28 @@ Package Body arbre is
 		End if;
 	End DiminuerTaille;
 
-	--R2 retourne la taille du root
+	--R1 retourne la taille du root
 	Function GetTailleRoot(arbre : T_Darbre) return integer is
 	Begin
 		return GoRoot(arbre).all.taille;
 	End GetTailleRoot;
 
+	--R1 Dire si un fils existe
+	Function FilsExiste(arbre : T_Darbre;nom : String) return boolean is
+		trouve : boolean;
+		i : integer;
+	Begin
+		--R2 Parcourir les fils
+		trouve := false;
+		if arbre.all.nbFils > 0 then
+			i := 1;
+			While not trouve and i <= arbre.all.nbFils Loop
+				trouve := arbre.all.T_Fils(i).all.nom = nom;
+				i := i+1;
+			End Loop;
+		Else
+			null;
+		End If;
+		return trouve;
+	End FilsExiste;
 End arbre;

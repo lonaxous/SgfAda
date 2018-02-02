@@ -33,7 +33,12 @@ Package body sgf is
 		--R2 Parcourir les fils
 		For i in 1..arbre.all.nbFils Loop
 			--R3 Afficher les fils
-			Put_Line(to_string(arbre.all.T_Fils(i).all.nom));
+			Put(to_string(arbre.all.T_Fils(i).all.nom));
+			--Affichage différent s'il s'agit d'un repertoire
+			If arbre.all.T_Fils(i).all.objet then
+				Put("/");
+			End if;
+			New_Line;
 		End Loop;
 		New_Line;
 	End Ls;
@@ -356,7 +361,7 @@ Package body sgf is
 		save := arbre;
 		cd("/");
 		Put("Capacité restante : ");
-		Put(TAILLEMAX-arbre.all.taille);
+		Put(TAILLEMAX-arbre.all.taille,0);
 		New_Line;
 		arbre := save;
 	End getCapacite;

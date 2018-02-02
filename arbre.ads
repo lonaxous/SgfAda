@@ -15,8 +15,6 @@ Type T_Noeud;
 Type T_Darbre is access T_Noeud; 
 Type T_Tsuiv is array(1..NMAX) of T_Darbre; --Contient des pointeurs vers les fils de l'arbre
 
-Capacite_Max_Atteinte : exception;
-
 Type T_Noeud is record -- Définition du noeud d'un arbre(Fichier ou Repertoire)
 	T_Pere : T_Darbre; --Les Répertoires précédents
 	nom : unbounded_string; --Nom de l'élément
@@ -289,4 +287,16 @@ Procedure DiminuerTaille(arbre : T_Darbre;tai : integer);
 --Exception : Aucune
 --###############################################################
 Function GetTailleRoot(arbre : T_Darbre) return integer;
+
+--###############################################################
+--Nom : FilsExiste
+--Sémantique : retourne vrai si un fils avec un même nom existe
+--Paramètre :arbre : Pointeur vers un noeud 
+-- 			 nom : Le nom du nouveau fils
+--retourne : vrai si un fils existe sinon faux
+--précondition : Aucun
+--postcondition : Auncun
+--Exception : Aucune
+--###############################################################
+Function FilsExiste(arbre : T_Darbre;nom : String) return boolean;
 End arbre;
