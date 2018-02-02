@@ -82,36 +82,36 @@ Procedure Mkdir(nom : String);
 --###############################################################
 --Nom : Rm
 --Sémantique : Suppression d'un fichier
---Paramètre : nom : nom du fichier
+--Paramètre : chemin : chemin menant au fichier à supprimer
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier n'existe plus
---Exception : Aucune
+--Exception : Constraint_Error
 --###############################################################
-Procedure Rm(nom : String);
+Procedure Rm(chemin : String);
 
 --###############################################################
 --Nom : RmR
 --Sémantique : Suppression d'un repertoir vide ou non
---Paramètre : nom : nom du repertoire
+--Paramètre : chemin : chemin menant au repertoire à supprimer
 --retourne : Aucun
 --précondition : Le repertoire existe
 --postcondition : Le repertoire n'existe plus
---Exception : Aucune
+--Exception : Constraint_Error
 --###############################################################
-Procedure RmR(nom : String);
+Procedure RmR(chemin : String);
 
 --###############################################################
 --Nom : Mv
---Sémantique : Deplacement d'un fichier ou renommage
---Paramètre : nom : nom du fichier à deplacer
+--Sémantique : Deplacement d'un fichier
+--Paramètre : CheminADeplacer : Chemin vers le fichier à déplacer
 --			  chemin : chemin du nouveau fichier
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier existe et est dans le bon repertoire
 --Exceptions : Fils_absent, Erreur_Chemin, Pas_Repertoire
 --###############################################################
-Procedure Mv(nom : String; chemin : String);
+Procedure Mv(CheminADeplacer : String; chemin : String);
 
 --###############################################################
 --Nom : Cd
@@ -127,14 +127,14 @@ Procedure Cd(chemin : String);
 --###############################################################
 --Nom : CpR
 --Sémantique : Copie d'un fichier ou un repertoire
---Paramètre : nom : nom du repertoire ou fichier
---			  chemin : chemin vers 
+--Paramètre : copie : Chemin vers le fichier ou repertoire à copier
+--			  chemin : Chemin vers le repertoire où copier le fichier ou repertoire
 --retourne : Aucun
 --précondition : Le repertoire existe
 --postcondition : Le repertoire n'existe plus
 --Exception : Fils_Absent, Pas_Repertoire, Erreur_Chemin
 --###############################################################
-Procedure CpR(nom : String; chemin : String);
+Procedure CpR(copie : String; chemin : String);
 
 --###############################################################
 --Nom : CopieCpr
@@ -162,14 +162,14 @@ Procedure Tar(chemin : String);
 --###############################################################
 --Nom : Nano
 --Sémantique : Modifie (la taille) d'un fichier
---Paramètre : nom : nom du fichier à modifier
---			  tai : Nouvelle taille du fichier
+--Paramètre : chemin : chemin du fichier à modifier
+--			  taille : Nouvelle taille du fichier
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier a changé de taille
---Exception : Aucune
+--Exception : Constraint_Error
 --###############################################################
-Procedure Nano(nom : String;tai : integer);
+Procedure Nano(chemin : String;taille : String);
 
 --###############################################################
 --Nom : DetermineChemin

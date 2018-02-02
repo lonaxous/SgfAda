@@ -1,6 +1,6 @@
 Package Body miniconsole is
 
-
+--R1 Executer une commande entré par un utilisateur
 Procedure Main is
 
 	commande : String(1..1000); --String pour stocker la commande
@@ -13,11 +13,13 @@ Begin
 	Put_Line("Bienvenue dans le sgf, utilisez '?' ou 'help' pour obtenir la liste des commandes.");
 	estFini := false;
 	Format;
+	--R2 Demander à l'utilisateur de saisir une commande
 	While not estFini Loop
 		Put(">>");
 		get_line(commande,lcommande);
 		If commande(1..4) = "quit" then
 			estFini := true;
+		--R3 Interpreter puis executer la commande
 		Else
 			InterpreteurCommande(commande,lcommande);
 			estFini := false;
@@ -95,12 +97,11 @@ Begin
 		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
 	Elsif T_Arguments(1) ="capacity" and cpt=1 then
 		getCapacite;
+	--Nano est la seule commande qui peut envoyer une Constraint Error à cause de sa saisie d'entier
 	Elsif T_Arguments(1) = "nano" and cpt=3 then
-		Nano(to_string(T_Arguments(2)),Integer'Value(to_string(T_Arguments(3))));
+		Nano(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
 	Else
 		Put_Line("Commande erronée !");
 	End If;
-	Exception
-		When Constraint_Error => Put_Line("Erreur, Nano à besoin d'un entier, nano {nom du fichier} {Nouvelle Taille}");
 End InterpreteurCommande;
 End miniconsole;

@@ -81,6 +81,7 @@ Package Body arbre is
 		SupprFils(fils.all.T_Pere,to_string(fils.all.nom));
 		--R2 Ajouter le fils au nouveau pere
 		AjoutFils(pere, fils);
+		ModifTaille(fils,10);
 	End ChangePere;
 
 

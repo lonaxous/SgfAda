@@ -78,14 +78,15 @@ Package body sgf is
 	End Mkdir;
 
 	--R1 Suppression d'un fichier
-	Procedure Rm(nom : String)is
-		i: integer;
+	Procedure Rm(chemin : String)is
+		fichier: T_Darbre;
 	Begin
-		--R2 Regarder si c'est un fichier
-		i := RechercheIndiceFils(arbre,nom);
-		if not arbre.all.T_Fils(i).all.objet then
+		--R2 Chercher le fichier
+		fichier := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
+		--R2 Déterminer si c'est bien un fichier
+		if not fichier.all.objet then
 			--R3 Supprimer le fichier
-			SupprFils(arbre,nom);
+			SupprFils(fichier.all.T_Pere,to_string(fichier.all.nom));
 		Else
 			Put_Line("Ce n'est pas un fichier essayez rm -r");
 		End If;
@@ -94,16 +95,18 @@ Package body sgf is
 	End Rm;
 
 	--R1 Supprimer un répertoire
-	Procedure RmR(nom : String)is
-		i : integer; --Indice du fils
+	Procedure RmR(chemin : String)is
+		fichier: T_Darbre;
 	Begin
-		--R2 Regarder si c'est un repertoire
-		i := RechercheIndiceFils(arbre,nom);
-		if arbre.all.T_Fils(i).all.objet then
-			--R3 Supprimer le repertoire
-			SupprFils(arbre,nom);
+		Put_Line(chemin);
+		--R2 Chercher le repertoire
+		fichier := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
+		--R2 Déterminer si c'est bien un repertoire
+		if fichier.all.objet then
+			--R3 Supprimer le fichier
+			SupprFils(fichier.all.T_Pere,to_string(fichier.all.nom));
 		Else
-			Put_Line("Ce n'est pas un fichier essayez rm");
+			Put_Line("Ce n'est pas un fichier essayez rm.");
 		End If;
 		Exception
 			When CONSTRAINT_ERROR => null;
@@ -182,21 +185,21 @@ Package body sgf is
 		Exception
 			When CONSTRAINT_ERROR => Put_Line("Erreur, Avec le déplacement");
 									 return null;
-			When Erreur_Root => Put_Line("Erreur, vous ne pouvez pas avoir de // dans un chemin");
+			When Erreur_Root => Put_Line("Erreur, vous ne pouvez pas avoir de // dans un chemin.");
 							    return null;
-			When Fils_Absent => Put_Line("Erreur, Un Fichier ou Repertoire du chemin n'existe pas");
+			When Fils_Absent => Put_Line("Erreur, Un Fichier ou Repertoire du chemin n'existe pas.");
 								return null;
-			When Pere_Absent => Put_Line("Erreur, Un ../ ne marche pas car le repertoire n'a pas de pere");
+			When Pere_Absent => Put_Line("Erreur, Un ../ ne marche pas car vous êtes à la racine.");
 								return null;
 	End DetermineChemin;
 
 	--R1 Deplacer un fichier ou renommer
-	Procedure Mv(nom : String; chemin : String)is
+	Procedure Mv(CheminADeplacer : String; chemin : String)is
 		ADeplacer : T_Darbre; --Arbre contenant le fils à déplacer
 		DuChemin  : T_Darbre; --Arbre contenant le futur pere
 	Begin
 		--R2 Recuperer le fils
-		ADeplacer := RechercheFils(arbre,nom);
+		ADeplacer := DetermineChemin(CheminADeplacer,length(to_unbounded_string(CheminADeplacer)));
 		--R2 Recuperer le futur pere
 		DuChemin := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		if ADeplacer = null then
@@ -251,7 +254,7 @@ Package body sgf is
 	End Cd;
 
 	--R2 Copier un fils dans un autre repertoire
-	Procedure CpR(nom : String; chemin : String)is
+	Procedure CpR(copie : String; chemin : String)is
 		ACopier : T_Darbre; --Arbre contenant l'arbre à copier
 		DuChemin : T_Darbre; --Arbre contenant l'arbre du chemin
 		Save : T_Darbre;
@@ -259,7 +262,7 @@ Package body sgf is
 	Begin
 		Save := arbre;
 		--R3 Récupérer le fils
-		ACopier := RechercheFils(arbre,nom);
+		ACopier := DetermineChemin(copie,length(to_unbounded_string(copie)));
 		--R3 Récupérer le repertoire au bout du chemin
 		DuChemin := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		--Si le fils n'existe pas
@@ -327,10 +330,12 @@ Package body sgf is
 	End Tar;
 
 	--R1 Modifier la taille d'un objet
-	Procedure Nano(nom : String; tai : integer)is
-		fils : T_Darbre;
+	Procedure Nano(chemin : String; taille : string)is
+		fils : T_Darbre; --Le Fils qui va être modifié
+		tai : integer; --La futur taille d'un fichier
 	Begin
-		fils := RechercheFils(arbre,nom);
+		tai := integer'value(taille);
+		fils := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		--R2 Vérifier si ce n'est pas un repertoire
 		If not fils.all.objet then
 			--R3 Vérifier la taille par rapport à la taille maximale possible
@@ -351,9 +356,10 @@ Package body sgf is
 		Exception
 			When Capacite_Max_Atteinte => Put_Line("Attention, capacité maximale atteinte, annulation de la commande précédente.");
 			When Pas_Repertoire => Put("Erreur, ");
-								   Put(chemin);
+								   Put(to_string(fils.all.nom));
 								   Put(" désigne un fichier");
 								   New_Line;
+			When Constraint_Error => Put_Line("Erreur, Nano à besoin d'un entier, nano {nom du fichier} {Nouvelle Taille}");
 	End Nano;
 
 	--Afficher les père pour le chemin
