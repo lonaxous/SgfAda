@@ -95,8 +95,12 @@ Begin
 		CpR(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
 	Elsif T_Arguments(1) ="capacity" and cpt=1 then
 		getCapacite;
+	Elsif T_Arguments(1) = "nano" and cpt=3 then
+		Nano(to_string(T_Arguments(2)),Integer'Value(to_string(T_Arguments(3))));
 	Else
 		Put_Line("Commande erronée !");
 	End If;
+	Exception
+		When Constraint_Error => Put_Line("Erreur, Nano à besoin d'un entier, nano {nom du fichier} {Nouvelle Taille}");
 End InterpreteurCommande;
 End miniconsole;

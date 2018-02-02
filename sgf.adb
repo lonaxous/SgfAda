@@ -326,17 +326,34 @@ Package body sgf is
 		arbre := arbre;
 	End Tar;
 
-	--Modifirt un objet
+	--R1 Modifier la taille d'un objet
 	Procedure Nano(nom : String; tai : integer)is
 		fils : T_Darbre;
 	Begin
 		fils := RechercheFils(arbre,nom);
-		If fils /= null then
-			fils.all.taille := tai;
-			AugmenterTaille(fils,tai-fils.all.taille);
-		Else	
-			null;
+		--R2 Vérifier si ce n'est pas un repertoire
+		If not fils.all.objet then
+			--R3 Vérifier la taille par rapport à la taille maximale possible
+			If GetTailleRoot(arbre) + tai-fils.all.taille < TAILLEMAX then
+				If fils /= null then
+					--R4 Changer la taille des pères
+					AugmenterTaille(fils,tai-fils.all.taille);
+					fils.all.taille := tai;
+				Else	
+					null;
+				End if;
+			Else
+				Raise Capacite_Max_Atteinte;
+			End if;
+		Else
+			raise Pas_Repertoire;
 		End if;
+		Exception
+			When Capacite_Max_Atteinte => Put_Line("Attention, capacité maximale atteinte, annulation de la commande précédente.");
+			When Pas_Repertoire => Put("Erreur, ");
+								   Put(chemin);
+								   Put(" désigne un fichier");
+								   New_Line;
 	End Nano;
 
 	--Afficher les père pour le chemin
