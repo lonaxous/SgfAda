@@ -1,5 +1,4 @@
 Package body sgf is 
-	Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin,Capacite_Max_Atteinte : Exception;
 	--R1 Creer le SGF
 	arbre : T_Darbre;
 
@@ -47,6 +46,7 @@ Package body sgf is
 	Procedure LsR is
 	Begin
 		Put(".");
+		--R2 Afficher tous les fils
 		AfficheTousFils(arbre,1);
 		New_Line;
 	End LsR;

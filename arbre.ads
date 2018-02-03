@@ -82,7 +82,7 @@ Procedure InitialiseFils(arbre : IN OUT T_Darbre);
 --retourne : Retourne l'indice du fils s'il n'existe pas retourne 0
 --précondition : Aucune
 --postcondition : Aucune
---Exception : Aucune
+--Exception : Constraint_Error
 --###############################################################
 Function RechercheIndiceFils(arbre : T_Darbre; nom : string)return integer;
 
@@ -119,7 +119,7 @@ Function RecherchePere(arbre : T_Darbre)return T_Darbre;
 --retourne : Auncun
 --précondition : Aucune
 --postcondition : Le fils existe bien
---Exception : TailleMax
+--Exception : Aucune
 --###############################################################
 Procedure AjoutFils(arbre : IN OUT T_Darbre; fils : T_Darbre)
 With

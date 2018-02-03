@@ -11,6 +11,10 @@ with arbre;
 Package sgf is
 	package arbre_sgf is new arbre(boolean);
 	use arbre_sgf;
+
+--Exceptions
+Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin,Capacite_Max_Atteinte : Exception;
+
 --Fonctions
 
 --###############################################################
@@ -64,7 +68,7 @@ Procedure LsR;
 --retourne : Aucun
 --précondition : Aucune
 --postcondition : Le fichier existe désormais
---Exception : Aucune
+--Exception : Capacite_Max_Atteinte
 --###############################################################
 Procedure Touch(nom : String);
 
@@ -109,7 +113,7 @@ Procedure RmR(chemin : String);
 --retourne : Aucun
 --précondition : Le fichier existe
 --postcondition : Le fichier existe et est dans le bon repertoire
---Exceptions : Fils_absent, Erreur_Chemin, Pas_Repertoire
+--Exceptions : Fils_absent, Erreur_Chemin, Pas_Repertoire, Pas_Fichier
 --###############################################################
 Procedure Mv(CheminADeplacer : String; chemin : String);
 
@@ -120,7 +124,7 @@ Procedure Mv(CheminADeplacer : String; chemin : String);
 --retourne : Aucun
 --précondition : Le repertoire lié au chemin existe
 --postcondition : aucun
---Exception : Erreur_Chemin, Pas_Repertoire
+--Exception : Erreur_Chemin, Pas_Repertoire 
 --###############################################################
 Procedure Cd(chemin : String);
 
@@ -132,7 +136,7 @@ Procedure Cd(chemin : String);
 --retourne : Aucun
 --précondition : Le repertoire existe
 --postcondition : Le repertoire n'existe plus
---Exception : Fils_Absent, Pas_Repertoire, Erreur_Chemin
+--Exception : Capacite_Max_Atteinte
 --###############################################################
 Procedure CpR(copie : String; chemin : String);
 
@@ -166,8 +170,8 @@ Procedure Tar(chemin : String);
 --			  taille : Nouvelle taille du fichier
 --retourne : Aucun
 --précondition : Le fichier existe
---postcondition : Le fichier a changé de taille
---Exception : Constraint_Error
+--postcondition : Aucun
+--Exception : Constraint_Error, Capacite_Max_Atteinte, Pas_Repertoire
 --###############################################################
 Procedure Nano(chemin : String;taille : String);
 
@@ -179,7 +183,7 @@ Procedure Nano(chemin : String;taille : String);
 --retourne : Pointeur vers le repertoire du chemin
 --précondition : aucune
 --postcondition : aucune
---Exceptions : Erreur_Root, Fils_Absent, Pere_Absent
+--Exceptions : Erreur_Root, Fils_Absent, Pere_Absent, Constraint_Error
 --###############################################################
 Function DetermineChemin(chemin : String; lchemin : integer)return T_Darbre;
 
@@ -193,6 +197,16 @@ Function DetermineChemin(chemin : String; lchemin : integer)return T_Darbre;
 --Exceptions : Aucune
 --###############################################################
 Procedure getCapacite;
+
+--###############################################################
+--Nom : Pwd
+--Sémantique : Affiche tous les pères d'un repertoire
+--Paramètre : a : Arbre de départ
+--retourne : Aucun
+--précondition : Aucune
+--postcondition : Aucune
+--Exception : Aucune
+--###############################################################
 Procedure Pwd(a : T_Darbre);
 
 End sgf;
