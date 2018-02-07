@@ -148,4 +148,6 @@ Begin
 	Put_Line("--Test Baisser la taille d'un fichier");
 	Nano("Test","2");
 	GetCapacite;
+	Put_Line("--Test Suppression de la racine");
+	RmR("/");
 End testsgf;

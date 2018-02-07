@@ -101,7 +101,7 @@ Procedure Rm(chemin : String);
 --retourne : Aucun
 --précondition : Le repertoire existe
 --postcondition : Le repertoire n'existe plus
---Exception : Constraint_Error
+--Exception : Constraint_Error, Error_Root
 --###############################################################
 Procedure RmR(chemin : String);
 
@@ -208,5 +208,16 @@ Procedure getCapacite;
 --Exception : Aucune
 --###############################################################
 Procedure Pwd(a : T_Darbre);
+
+--###############################################################
+--Nom : Prompt
+--Sémantique : Affiche la chaine de caractère du repertoire courant, utilisé pour l'affichage de la miniconsole
+--Paramètre : Aucun
+--retourne : Aucun
+--précondition : Aucune
+--postcondition : Aucune
+--Exception : Aucune
+--###############################################################
+Procedure Prompt;
 
 End sgf;

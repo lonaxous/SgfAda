@@ -15,15 +15,9 @@ Package body sgf is
 
 	--R1 Afficher le chemin courant
 	Procedure Pwd is
-		a : T_Darbre;
 	Begin
-		If arbre.all.T_Pere = null then
-			Put_Line(to_string(arbre.all.nom));
-		Else
-			a := arbre;
-			Pwd(a);
-			New_Line;
-		End If;
+		Prompt;
+		New_Line;
 	End Pwd;
 
 	--R1 Afficher les dossier et fichier du repertoire courant
@@ -96,20 +90,25 @@ Package body sgf is
 
 	--R1 Supprimer un répertoire
 	Procedure RmR(chemin : String)is
-		fichier: T_Darbre;
+		repertoire: T_Darbre; --Repertoire à supprimer
 	Begin
-		Put_Line(chemin);
 		--R2 Chercher le repertoire
-		fichier := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
+		repertoire := DetermineChemin(chemin,length(to_unbounded_string(chemin)));
 		--R2 Déterminer si c'est bien un repertoire
-		if fichier.all.objet then
-			--R3 Supprimer le fichier
-			SupprFils(fichier.all.T_Pere,to_string(fichier.all.nom));
+		If repertoire.all.objet then
+			--R3 Vérifier qu'il ne s'agit pas du repertoire racine
+			If repertoire.all.T_Pere /= null then
+				--R3 Supprimer le fichier
+				SupprFils(repertoire.all.T_Pere,to_string(repertoire.all.nom));
+			Else
+				raise Erreur_Root;
+			End if;
 		Else
 			Put_Line("Ce n'est pas un fichier essayez rm.");
 		End If;
 		Exception
 			When CONSTRAINT_ERROR => null;
+			When Erreur_Root => Put_Line("Vous ne pouvez pas supprimer la racine.");
 	End RmR;
 
 	--R1 Donner l'arbre à partir d'un chemin
@@ -388,4 +387,13 @@ Package body sgf is
 		New_Line;
 		arbre := save;
 	End getCapacite;
+
+	Procedure Prompt is
+	Begin
+		If arbre.all.T_Pere /= null then
+			Pwd(arbre);
+		Else
+			Put("/");
+		End if;
+	End Prompt;
 End sgf;

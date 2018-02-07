@@ -15,7 +15,8 @@ Begin
 	Format;
 	--R2 Demander à l'utilisateur de saisir une commande
 	While not estFini Loop
-		Put(">>");
+		Prompt;
+		Put("$ ");
 		get_line(commande,lcommande);
 		If commande(1..4) = "quit" then
 			estFini := true;
