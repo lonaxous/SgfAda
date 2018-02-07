@@ -13,7 +13,7 @@ Package sgf is
 	use arbre_sgf;
 
 --Exceptions
-Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin,Capacite_Max_Atteinte : Exception;
+Invalid_Name,Pas_Repertoire,Pas_Fichier,Pere_Absent,Fils_Absent,Erreur_Root,Erreur_Chemin,Capacite_Max_Atteinte : Exception;
 
 --Fonctions
 
@@ -51,6 +51,17 @@ Procedure Pwd;
 Procedure Ls;
 
 --###############################################################
+--Nom : Ls
+--Sémantique : Affiche le contenu dans repertoire désigné
+--Paramètre : chemin : Chaine de caractère désignant un repertoire
+--retourne : Auncun 
+--précondition : Aucune
+--postcondition : Aucune
+--Exception : Aucune
+--###############################################################
+Procedure Ls(chemin : String);
+
+--###############################################################
 --Nom : LsR
 --Sémantique : Affiche le contenu du repertoire courant et de ses sous repertoire
 --Paramètre : Aucun
@@ -68,7 +79,7 @@ Procedure LsR;
 --retourne : Aucun
 --précondition : Aucune
 --postcondition : Le fichier existe désormais
---Exception : Capacite_Max_Atteinte
+--Exception : Capacite_Max_Atteinte, Invalid_Name
 --###############################################################
 Procedure Touch(nom : String);
 
@@ -79,7 +90,7 @@ Procedure Touch(nom : String);
 --retourne : Aucun
 --précondition : Aucune
 --postcondition : Le repertoire existe désormais
---Exception : Aucune
+--Exception : Invalid_Name
 --###############################################################
 Procedure Mkdir(nom : String);
 

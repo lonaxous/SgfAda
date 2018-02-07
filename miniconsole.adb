@@ -78,6 +78,8 @@ Begin
 	--cpt représente le nombre d'argument
 	If T_Arguments(1) = "ls" and cpt = 1 then
 		Ls;
+	Elsif T_Arguments(1) = "ls" and cpt = 2 then
+		Ls(to_string(T_Arguments(2)));
 	Elsif T_Arguments(1) = "pwd" and cpt = 1 then
 		Pwd;
 	Elsif T_Arguments(1) = "ls-r" and cpt = 1 then
@@ -101,6 +103,20 @@ Begin
 	--Nano est la seule commande qui peut envoyer une Constraint Error à cause de sa saisie d'entier
 	Elsif T_Arguments(1) = "nano" and cpt=3 then
 		Nano(to_string(T_Arguments(2)),to_string(T_Arguments(3)));
+	Elsif (T_Arguments(1) = "help" or T_Arguments(1) = "?") and cpt=1 then
+		Put_Line("ls [Chemin Repertoire] | Affiche le contenu du repertoire désigné.");
+		Put_Line("ls -r | Affiche le contenu du repertoire courant et de tous les sous-repertoires");
+		Put_Line("pwd | Affiche le chemin du repertoire courant.");
+		Put_Line("touch [Nom fichier] | Créer un fichier dans le repertoire courant.");
+		Put_Line("mkdir [Nom repertoire] | Créer un repertoire dans le repertoire courant.");
+		Put_Line("cd [Chemin] | Changement de repertoire.");
+		Put_Line("rm [Chemin fichier] | Suppression du fichier désigné.");
+		Put_Line("rm -r [Chemin repertoire] | Suppression du repertoire désigné.");
+		Put_Line("mv [Chemin fichier] [Chemin repertoire] | Déplace le fichier désigné vers un repertoire donné.");
+		Put_Line("cp -r [Chemin] [Chemin repertoire]| Copie un élément désigné vers un repertoire donné.");
+		Put_Line("help/? | Affiche la liste des commandes possible.");
+		Put_Line("capacity | Affiche la capacité restante du disque dur.");
+		Put_Line("quit | Quitte le SGF.");
 	Else
 		Put_Line("Commande erronée !");
 	End If;

@@ -20,7 +20,7 @@ Package body sgf is
 		New_Line;
 	End Pwd;
 
-	--R1 Afficher les dossier et fichier du repertoire courant
+	--R1 Afficher le contenu du repertoire courant
 	Procedure Ls is
 	Begin
 		--R2 Parcourir les fils
@@ -36,6 +36,26 @@ Package body sgf is
 		New_Line;
 	End Ls;
 
+	--R1 Afficher le contenu d'un repertoire désginé
+	Procedure Ls(chemin : String)is
+		temp : T_Darbre;
+		save : T_Darbre;
+	Begin
+		--R2 Aller dans le repertoire à afficher
+		temp := DetermineChemin(chemin,length((to_unbounded_string(chemin))));
+		if temp.all.objet then
+			save := arbre;
+			arbre := temp;
+			Ls;
+			arbre := save;
+		Else
+			Put("Erreur, ");
+			Put(chemin);
+			Put(" désigne un fichier");
+			New_Line;
+		End if;
+	End Ls;
+
 	--R1 Affiche le contenu du repertoire courant et de ses sous repertoire
 	Procedure LsR is
 	Begin
@@ -49,26 +69,37 @@ Package body sgf is
 	Procedure Touch(nom : String)is
 		fils : T_Darbre;
 	Begin
-		--R2 Vérifier si la taille max n'est pas atteinte suite 
-		If GetTailleRoot(arbre) + 10 < TAILLEMAX then
-			CreerFils(arbre, nom, false);
-			fils := RechercheFils(arbre,nom);
-			If fils /= null then
-				ModifTaille(fils,10);
+		If nom /= "/" and nom /= " " and nom /= "." and nom /=".."then
+			--R2 Vérifier si la taille max n'est pas atteinte suite 
+			If GetTailleRoot(arbre) + 10 < TAILLEMAX then
+				CreerFils(arbre, nom, false);
+				fils := RechercheFils(arbre,nom);
+				If fils /= null then
+					ModifTaille(fils,10);
+				Else
+					null;
+				End if;
 			Else
-				null;
+				raise Capacite_Max_Atteinte;
 			End if;
 		Else
-			raise Capacite_Max_Atteinte;
-		End if;
+			Raise Invalid_Name;
+		End If;
 		Exception
 			When Capacite_Max_Atteinte =>Put_Line("Attention capacité maximal atteinte, annulation de la commande précédente !");
+			When Invalid_Name => Put_Line("Erreur, Vous avez saisie un nom de fichier invalide.");
 	End Touch;
 
 	--R1 Creer un repertoire
 	Procedure Mkdir(nom : String)is
 	Begin
-		CreerFils(arbre, nom, true);
+		if nom /= "/" and nom /= " " and nom /= "." and nom /=".."then
+			CreerFils(arbre, nom, true);
+		Else
+			raise Invalid_Name;
+		End If;
+		Exception
+			When Invalid_Name => Put_Line("Erreur, Vous avez saisie un nom de repertoire invalide.");
 	End Mkdir;
 
 	--R1 Suppression d'un fichier
