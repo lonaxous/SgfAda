@@ -10,6 +10,8 @@ Begin
 	--Suppression de Warnings inutiles.
 	pragma Warnings (Off, "index for ""commande"" may assume lower bound of 1");
 	pragma Warnings (Off, "suggested replacement: ""commande'First""");
+	pragma Warnings (Off, "index for ""nom"" may assume lower bound of 1");
+	pragma Warnings (Off, "suggested replacement: ""nom'First""");
 	Put_Line("Bienvenue dans le sgf, utilisez '?' ou 'help' pour obtenir la liste des commandes.");
 	estFini := false;
 	Format;

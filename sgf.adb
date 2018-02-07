@@ -69,7 +69,7 @@ Package body sgf is
 	Procedure Touch(nom : String)is
 		fils : T_Darbre;
 	Begin
-		If nom /= "/" and nom /= " " and nom /= "." and nom /=".."then
+		If nom(1) /= '/' and nom(1) /= '.' then
 			--R2 Vérifier si la taille max n'est pas atteinte suite 
 			If GetTailleRoot(arbre) + 10 < TAILLEMAX then
 				CreerFils(arbre, nom, false);
@@ -93,7 +93,7 @@ Package body sgf is
 	--R1 Creer un repertoire
 	Procedure Mkdir(nom : String)is
 	Begin
-		if nom /= "/" and nom /= " " and nom /= "." and nom /=".."then
+		If nom(1) /= '/' and nom(1) /= '.' then
 			CreerFils(arbre, nom, true);
 		Else
 			raise Invalid_Name;
